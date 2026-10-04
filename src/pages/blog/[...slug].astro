@@ -1,0 +1,30 @@
+---
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(entry => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{entry.data.title}</title>
+  </head>
+  <body style="max-width: 800px; margin: 0 auto; padding: 20px; font-family: sans-serif; line-height: 1.6;">
+    <a href={import.meta.env.BASE_URL}>← トップに戻る</a>
+    <h1>{entry.data.title}</h1>
+    <p style="color: #666;">公開日: {entry.data.pubDate.toLocaleDateString('ja-JP')}</p>
+    <hr />
+    <Content />
+  </body>
+</html>
